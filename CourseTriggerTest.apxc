@@ -2,7 +2,7 @@
 public class CourseTriggerTest {
     
     @isTest
-    static void singleTest() {
+    static void SingleTest() {
         
         String recordTypeID = '0125Y000001b9aDQAQ';
         
@@ -23,7 +23,7 @@ public class CourseTriggerTest {
     }
     
     @isTest
-    static void bulkTest() {
+    static void BulkTest() {
         List<Database.SaveResult> results = Database.insert(LessonGenUtilityTest.GenerateLessons(100, 'Name'), false);
         Integer numFailed = 0;
         

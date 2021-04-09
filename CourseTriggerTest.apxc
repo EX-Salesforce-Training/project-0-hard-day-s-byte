@@ -1,0 +1,38 @@
+@isTest
+public class CourseTriggerTest {
+    
+    @isTest
+    static void singleTest() {
+        
+        String recordTypeID = '0125Y000001b9aDQAQ';
+        
+        Course__c l = new Course__c();
+        l.Name = 'Name';
+        l.RecordTypeId = recordTypeID;
+        l.Status__c = 'New';
+        
+        Database.SaveResult sr = Database.insert(l, false);
+        
+        Integer numFailed = 0;
+        
+        if(!sr.isSuccess()){
+            numFailed = 1;
+        }
+        
+        System.assertEquals(0, numFailed);
+    }
+    
+    @isTest
+    static void bulkTest() {
+        List<Database.SaveResult> results = Database.insert(LessonGenUtilityTest.GenerateLessons(100, 'Name'), false);
+        Integer numFailed = 0;
+        
+        for (Database.SaveResult sr: results) {
+            if(!sr.isSuccess()){
+                numFailed += 1;
+            }
+        }
+        
+        System.assertEquals(0, numFailed);
+    }
+}

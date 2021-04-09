@@ -1,0 +1,18 @@
+@isTest
+public class LessonGenUtilityTest {
+    
+    public static List<Course__c> GenerateLessons(Integer numLess, String Name) {
+        List<Course__c> gendLess = new List<Course__c>();
+        String recordID = '0125Y000001b9aDQAQ';
+        
+        for(Integer i = 0; i < numLess; i++) {
+            Course__c l = new Course__c();
+            l.Name = Name + '-' + i;
+            l.RecordTypeId = recordID;
+            l.Status__c = 'New';
+            gendLess.add(l);
+        }
+        
+        return gendLess;
+    }
+}

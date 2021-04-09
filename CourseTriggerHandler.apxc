@@ -1,6 +1,6 @@
 public class CourseTriggerHandler {
        
-    public static void flagQAReview(List<Course__c> courses) {
+    public static void FlagQAReview(List<Course__c> courses) {
         //Lesson RecordTypeID
         String recordTypeID = '0125Y000001b9aDQAQ';
         //Queue ID

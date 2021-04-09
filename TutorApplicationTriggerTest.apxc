@@ -1,0 +1,38 @@
+@isTest(SeeAllData=true)
+public class TutorApplicationTriggerTest {
+    
+    @isTest
+    static void SingleTest() {
+        
+        Tutor_Application__c tA = new Tutor_Application__c();
+        tA.Status__c = 'New';
+        tA.Date_Opened__c = system.today();
+        tA.Learner_Since__c = system.today();
+        tA.Learner_Account__c = '0015Y00002h80B2QAI';
+        
+        Database.SaveResult sr = Database.insert(tA, false);
+        
+        Integer numFailed = 0;
+        
+        if(!sr.isSuccess()){
+            numFailed = 1;
+        }
+        
+        System.assertEquals(0, numFailed);
+    }
+    
+    @isTest
+    static void BulkTest() {
+        List<Database.SaveResult> results = Database.insert(TutAppGenUtTest.GenerateAppies(100, 'Name'), false);
+        Integer numFailed = 0;
+        
+        for (Database.SaveResult sr: results) {
+            if(!sr.isSuccess()){
+                numFailed += 1;
+            }
+        }
+        
+        System.assertEquals(0, numFailed);
+    }
+
+}

@@ -21,7 +21,7 @@ trigger CourseTrigger on Course__c (before insert, before update, before delete,
             
         }
         when AFTER_INSERT {
-            CourseTriggerHandler.flagQAReview(trigger.new);
+            CourseTriggerHandler.FlagQAReview(trigger.new);
         }
         when AFTER_UPDATE {
             

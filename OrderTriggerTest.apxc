@@ -3,7 +3,7 @@ public class OrderTriggerTest {
     
     @isTest
     static void singleTest() {
-        
+        //Hello
         Order o = new Order();
         o.Status = 'Draft';
         o.Course__c = 'a065Y00001vKqtXQAS';

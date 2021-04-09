@@ -1,0 +1,37 @@
+@isTest
+public class OrderTriggerTest {
+    
+    @isTest
+    static void singleTest() {
+        
+        Order o = new Order();
+        o.Status = 'Draft';
+        o.Course__c = 'a065Y00001vKqtXQAS';
+        o.AccountId = '0015Y00002h80B2QAI';
+        o.EffectiveDate = system.today();
+        
+        Database.SaveResult sr = Database.insert(o, false);
+        
+        Integer numFailed = 0;
+        
+        if(!sr.isSuccess()){
+            numFailed = 1;
+        }
+        
+        System.assertEquals(0, numFailed);
+    }
+    
+    @isTest
+    static void bulkTest() {
+        List<Database.SaveResult> results = Database.insert(OrderGenerationUtilityTest.GenerateOrders(100, 'Name'), false);
+        Integer numFailed = 0;
+        
+        for (Database.SaveResult sr: results) {
+            if(!sr.isSuccess()){
+                numFailed += 1;
+            }
+        }
+        
+        System.assertEquals(0, numFailed);
+    }
+}

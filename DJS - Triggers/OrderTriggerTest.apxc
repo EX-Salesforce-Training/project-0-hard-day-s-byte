@@ -1,37 +1,43 @@
 @isTest
 public class OrderTriggerTest {
-    
+
     @isTest
     static void singleTest() {
-        //Hello
+        // Create a single order with the required fields
         Order o = new Order();
         o.Status = 'Draft';
         o.Course__c = 'a065Y00001vKqtXQAS';
         o.AccountId = '0015Y00002h80B2QAI';
         o.EffectiveDate = system.today();
-        
+
+        // Try to insert record and save result
         Database.SaveResult sr = Database.insert(o, false);
-        
         Integer numFailed = 0;
-        
-        if(!sr.isSuccess()){
+
+        // Check if the operation has failed and update variable
+        if(!sr.isSuccess()) {
             numFailed = 1;
         }
-        
+
+        // Assert error if operation has failed
         System.assertEquals(0, numFailed);
     }
-    
+
     @isTest
     static void bulkTest() {
+        // 
         List<Database.SaveResult> results = Database.insert(OrderGenerationUtilityTest.GenerateOrders(100, 'Name'), false);
         Integer numFailed = 0;
-        
+
+        // Try to insert records and save result
         for (Database.SaveResult sr: results) {
-            if(!sr.isSuccess()){
+            if(!sr.isSuccess()) {
                 numFailed += 1;
             }
         }
-        
+
+        // Assert error if operation has failed
         System.assertEquals(0, numFailed);
     }
+
 }

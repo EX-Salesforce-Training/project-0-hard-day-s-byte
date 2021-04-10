@@ -1,6 +1,7 @@
 @isTest
 public class LessonGenUtilityTest {
     
+    // Generate Lesson records to test CourseTrigger
     public static List<Course__c> GenerateLessons(Integer numLess, String Name) {
         List<Course__c> gendLess = new List<Course__c>();
         String recordID = '0125Y000001b9aDQAQ';

@@ -1,23 +1,26 @@
 public class TutorApplicationTriggerHandler {
-    
-    public static void FlagAppReview(List<Tutor_Application__c> appies) {
-        String queueID = '00G5Y0000058e3kUAA';
-        List<Task> insertList = new List<Task>();
-        
-        for (Tutor_Application__c a: appies) {
-            Task newTask = new Task();
-            newTask.Subject = 'Application Review - ' + a.Name;
-            newTask.OwnerId = queueID;
-            
-            String learnerAccountID = a.Learner_Account__c;
-            Account l = [SELECT Name FROM Account WHERE Id = :learnerAccountID];
-            
-            newTask.Description = 'Learner Account: ' + l.Name + '\nApplication Date: ' + 
-                a.Date_Opened__c + '\nLanguage(s): ' + a.Language_s__c + '\nLearner Since: ' + a.Learner_Since__c;
-            
-            insertList.add(newTask);
-        }
-        
-        insert insertList;
-    }
+
+	public static void FlagAppReview(List<Tutor_Application__c> appies) {
+		String queueID = '00G5Y0000058e3kUAA';     // Recruiter queue
+		List<Task> insertList = new List<Task>();
+
+		for (Tutor_Application__c a: appies) {
+			Task newTask = new Task();
+			newTask.Subject = 'Application Review - ' + a.Name;
+
+			// Get ID of the Learner's account and grab name from record
+			String learnerAccountID = a.Learner_Account__c;
+			Account l = [SELECT Name FROM Account WHERE Id = :learnerAccountID];
+
+			// Give Recruiters access to information at a glance in task
+			newTask.Description = 'Learner Account: ' + l.Name + '\nApplication Date: ' +
+								a.Date_Opened__c + '\nLanguage(s): ' + a.Language_s__c + '\nLearner Since: ' + a.Learner_Since__c;
+
+			// Assign to Recruiter queue
+			newTask.OwnerId = queueID;
+			insertList.add(newTask);
+		}
+
+		insert insertList;
+	}
 }

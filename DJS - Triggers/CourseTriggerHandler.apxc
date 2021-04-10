@@ -1,27 +1,30 @@
 public class CourseTriggerHandler {
-       
-    public static void FlagQAReview(List<Course__c> courses) {
-        //Lesson RecordTypeID
-        String recordTypeID = '0125Y000001b9aDQAQ';
-        //Queue ID
-        String queueID = '00G5Y0000058diXUAQ';
-        List<Task> insertTask = new List<Task>();
-        
-        for (Course__c c: courses) {
-            if (c.RecordTypeId == recordTypeID) {
-                String owner = c.OwnerId;
-                
-                Task newTask = new Task();
-                newTask.Subject = 'Review New Lesson - ' + c.Name;
-                //Assign to QA Tester Queue:
-                newTask.OwnerId = queueID;
-                
-                User u = [SELECT Name FROM User WHERE ID = :owner];
-                newTask.Description = 'Lesson name: ' + c.Name + '\nLesson creator: ' + u.Name;
-                insertTask.add(newTask);
-            }
-        }
-        
-        insert insertTask;
-    }
+
+	public static void FlagQAReview(List<Course__c> courses) {
+
+		String recordTypeID = '0125Y000001b9aDQAQ'; //Lesson RecordTypeID
+		String queueID = '00G5Y0000058diXUAQ';
+		List<Task> insertTask = new List<Task>();
+
+		for (Course__c c: courses) {
+			// We only need records specifically of the Lesson type
+			if (c.RecordTypeId == recordTypeID) {
+				// Get owner of Lesson record
+				String owner = c.OwnerId;
+
+				Task newTask = new Task();
+				newTask.Subject = 'Review New Lesson - ' + c.Name;
+
+				// Get user name (Lesson record creator) using the OwnerId
+				User u = [SELECT Name FROM User WHERE ID = :owner];
+				newTask.Description = 'Lesson name: ' + c.Name + '\nLesson creator: ' + u.Name;
+
+				// Assign task to QA Tester Queue
+				newTask.OwnerId = queueID;
+				insertTask.add(newTask);
+			}
+		}
+
+		insert insertTask;
+	}
 }

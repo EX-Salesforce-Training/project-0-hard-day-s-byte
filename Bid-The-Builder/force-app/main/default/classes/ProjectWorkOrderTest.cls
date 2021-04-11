@@ -45,6 +45,9 @@ private class ProjectWorkOrderTest {
         system.assertEquals(false, ProjectWorkOrderTriggerHandler.checkUndeliveredInvoice(projectInvoices).Delivered__c);
     }
     
+
+    @isTest
+    static void updateNewOrdersShould
     @testSetup
     static void createOrder(){
         Project__c newProject = new Project__c(name='TestHouse', work_type__c = 'Concrete', address__c = '123 Boulevard Lane');

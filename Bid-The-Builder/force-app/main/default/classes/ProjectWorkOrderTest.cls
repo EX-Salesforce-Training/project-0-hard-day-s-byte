@@ -6,6 +6,7 @@ private class ProjectWorkOrderTest {
         Project_Work_Order__c newOrder = new Project_Work_Order__c();
         system.assertEquals(true, ProjectWorkOrderTriggerHandler.invoiceIsNull(newOrder));
     }
+    
     @isTest
    	static void InvoiceIsNullShouldReturnFalse(){
         Project__c newProject = new Project__c(name='TestHouse', work_type__c = 'Concrete', address__c = '123 Boulevard Lane');

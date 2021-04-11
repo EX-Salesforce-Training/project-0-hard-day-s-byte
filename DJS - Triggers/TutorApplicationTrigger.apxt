@@ -21,6 +21,9 @@ trigger TutorApplicationTrigger on Tutor_Application__c (before insert, before u
         when BEFORE_DELETE{
             
         }
+        when AFTER_INSERT {
+            TutorApplicationTriggerHandler.FlagAppReview(trigger.new);
+        }
         when AFTER_UPDATE {
             
         }
@@ -29,9 +32,6 @@ trigger TutorApplicationTrigger on Tutor_Application__c (before insert, before u
         }
         when AFTER_UNDELETE {
             
-        }
-        when AFTER_INSERT {
-            TutorApplicationTriggerHandler.FlagAppReview(trigger.new);
         }
     }
 }

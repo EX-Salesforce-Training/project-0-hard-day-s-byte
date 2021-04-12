@@ -11,7 +11,7 @@ trigger ScheduleTrigger on Schedule__c (before insert, before update, before del
             
         }
         when AFTER_INSERT{
-             ScheduleTriggerHandlerTwo.SendingEmail(trigger.new);
+             ScheduleTriggerHandler.SendingEmail(trigger.new);
         }
         when AFTER_UPDATE{
             

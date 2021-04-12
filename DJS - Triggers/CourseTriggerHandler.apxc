@@ -13,7 +13,7 @@ public class CourseTriggerHandler {
 				// Create task with name of lesson and lesson creator
 				Task newTask = new Task();
 				newTask.Subject = 'Review New Lesson - ' + c.Name;
-				newTask.Description = 'Lesson name: ' + c.Name + '\nLesson creator: ' + c.Owner.Name; // !!!!
+				newTask.Description = 'Lesson name: ' + c.Name + '\nLesson creator: ' + c.Owner; // !!!
 
 				// Assign task to QA Tester Queue
 				newTask.OwnerId = queueID;

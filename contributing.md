@@ -32,4 +32,5 @@
  - Navigate to this project folder in command line
  - Run "sfdx force:source:retrieve -u {name-of-business} -x ./manifest/package.xml"
  - You should now be able to find all of your classes and triggers from the org in the project you   created under the "force/main/default" folder
+ - Add and commit your changes with "git add" and "git commit".
  - push new project to your branch with "git push origin {name-of-business}" and begin working locally with your code.

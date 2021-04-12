@@ -2,19 +2,20 @@ public class ScheduleTriggerHandler {
     
 
     public static List<Schedule__c> checkForDuplicates(List<Schedule__c> newSchedule){
-        //Extracting user from Schedule
+        //Getting the user from Schedule
         Set<String> users = new Set<String>();
         for (Schedule__c a: newSchedule){
             if (a.User__c != null){
                 users.add(a.User__c);
             }
         }
-        //Looking for duplicates in Schedule
+        //Looking for any duplicates in Schedule
         Map<String, Schedule__C> existingUsersMap = new Map<String, Schedule__c>();
         for(Schedule__c existingUsers: [SELECT id, User__c FROM Schedule__c WHERE User__c IN: users]){
             existingUsersMap.put(existingUsers.User__c, existingUsers);    
         }
-       // Compare to see if any duplicates and then throw an error 
+        
+        // Compare to see if any duplicates and then throw an error
         for (Schedule__c a: newSchedule){
             Schedule__c duplicate = existingUsersMap.get(a.User__c);
             if (duplicate != null){
@@ -23,5 +24,43 @@ public class ScheduleTriggerHandler {
         }        
         return newSchedule;
     }
+    
+    
+    
+        public static List<Schedule__c> SendingEmail(List<Schedule__c> email) { 
+        
+            //Storing the email
+        List<Messaging.SingleEmailMessage> newMail = new List<Messaging.SingleEmailMessage>();
+        
+        //Creating the email
+        for (Schedule__c a:email){
+            if(a.Name != null){
+                Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+                
+           
+                
+                //Who will get the email
+                List<String> SendEmail = new List<String>();
+                SendEmail.add(a.User__c);
+                mail.setToAddresses(SendEmail);
+                
+                //Who the email is sent from
+                mail.setReplyTo('aliakamdec@yahoo.com');
+                
+                //Email Contents
+                mail.setSubject('New Schedule Created');
+                String body = 'Hello' + a.Name + ', ';
+                body += 'I have created a new Schedule for you.';
+                mail.setHtmlBody(body);
+                
+                newMail.add(mail);
+            }
+        }
+        
+        Messaging.sendEmail(newMail);
+        
+        return email;
+
+    }  
     
 }

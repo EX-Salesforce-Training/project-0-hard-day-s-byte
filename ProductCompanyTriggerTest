@@ -15,12 +15,12 @@ public class ProductCompanyTriggerTest {
     private static void singleTest(){
         
         //Create instance of object under test conditions
-        Product_Company__c p = new Product_Company__c(Name = 'Test', Company_Email__c = 'email@test.com');
+        Product_Company__c p = new Product_Company__c(Name = 'Test', Company_Website__c = 'www.test.com', Company_Phone_Number__c = '656-468-5410', Company_Email__c = 'email@test.com');
         
         //if no duplicate, insert should go through with no issue
         insert p;
         
-        Product_Company__c p2 = new Product_Company__c(Name = 'Test2', Company_Email__c = 'email@test.com');
+        Product_Company__c p2 = new Product_Company__c(Name = 'Test2', Company_Website__c = 'www.test2.com', Company_Phone_Number__c = '656-469-5410', Company_Email__c = 'email@test.com');
         
         // since it is a duplicate, the database should not have the record saved if the trigger and handler work correctly.
         Database.SaveResult sr = Database.insert(p2, false);
@@ -40,9 +40,9 @@ public class ProductCompanyTriggerTest {
         List<Product_Company__c> DuplicateComps = new List<Product_Company__c>();
         for(Integer i = 0; i < 295; i++){
             if(i<195){
-                TestComps.add(new Product_Company__c(Name = 'Test ' + i, Company_Email__c = 'email' + i + '@test.com'));
+                TestComps.add(new Product_Company__c(Name = 'Test ' + i, Company_Website__c = 'www.test' + i +'.com',  Company_Phone_Number__c = '793-512-8379', Company_Email__c = 'email' + i + '@test.com'));
             } else{
-                DuplicateComps.add(new Product_Company__c(Name = 'Test ' + i, Company_Email__c = 'email' + i + '@test.com'))
+                DuplicateComps.add(new Product_Company__c(Name = 'Test ' + i, Company_Website__c = 'www.test' + i +'.com', Company_Phone_Number__c = '793-512-8379', Company_Email__c = 'email' + i + '@test.com'));
         	}
         }
         insert TestComps;

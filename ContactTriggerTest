@@ -1,0 +1,21 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: ContactTriggerTest
+// Author: Syed Asghar, Revature P0 Sys Admin
+// Created: 04/09/21
+// Updated: 04/11/21
+// Description: Test Class for Contact Trigger.
+//
+///////////////////////////////////////////////////////////////
+
+@isTest
+public class ContactTriggerTest {
+    
+    @isTest
+    private static void ContactTriggerHandlerPositiveTest(){
+        Stores__c s = new Stores__c(); 
+        Contact c = new Contact();
+        c.Store_Number__c = s.Store_Number__c;
+    } 
+
+}

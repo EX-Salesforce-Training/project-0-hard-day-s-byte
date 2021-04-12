@@ -1,0 +1,27 @@
+public class ScheduleTriggerHandler {
+    
+
+    public static List<Schedule__c> checkForDuplicates(List<Schedule__c> newSchedule){
+        //Extracting user from Schedule
+        Set<String> users = new Set<String>();
+        for (Schedule__c a: newSchedule){
+            if (a.User__c != null){
+                users.add(a.User__c);
+            }
+        }
+        //Looking for duplicates in Schedule
+        Map<String, Schedule__C> existingUsersMap = new Map<String, Schedule__c>();
+        for(Schedule__c existingUsers: [SELECT id, User__c FROM Schedule__c WHERE User__c IN: users]){
+            existingUsersMap.put(existingUsers.User__c, existingUsers);    
+        }
+        
+        for (Schedule__c a: newSchedule){
+            Schedule__c duplicate = existingUsersMap.get(a.User__c);
+            if (duplicate != null){
+                a.addError('ERROR: He is already scheduled to work');
+            }
+        }        
+        return newSchedule;
+    }
+    
+}

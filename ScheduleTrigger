@@ -1,4 +1,4 @@
-trigger NewScheduleTrigger on Schedule__c (before insert, before update, before delete, after delete, after undelete, after update, after insert) {
+trigger ScheduleTrigger on Schedule__c (before insert, before update, before delete, after delete, after undelete, after update, after insert) {
 
     switch on trigger.operationType{
         when BEFORE_INSERT{
@@ -11,7 +11,7 @@ trigger NewScheduleTrigger on Schedule__c (before insert, before update, before 
             
         }
         when AFTER_INSERT{
-             
+             ScheduleTriggerHandlerTwo.SendingEmail(trigger.new);
         }
         when AFTER_UPDATE{
             

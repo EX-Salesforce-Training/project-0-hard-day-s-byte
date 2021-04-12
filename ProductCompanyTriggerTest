@@ -1,0 +1,61 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: ProductCompanyTriggerTest
+// Author: Syed Asghar, Revature P0 Sys Admin
+// Created: 04/09/21
+// Updated: 04/11/21
+// Description: Basic trigger test to avoid duplicates while entering in product companies.
+//
+///////////////////////////////////////////////////////////////
+
+@isTest
+public class ProductCompanyTriggerTest {
+    
+    @isTest
+    private static void singleTest(){
+        
+        //Create instance of object under test conditions
+        Product_Company__c p = new Product_Company__c(Name = 'Test', Company_Email__c = 'email@test.com');
+        
+        //if no duplicate, insert should go through with no issue
+        insert p;
+        
+        Product_Company__c p2 = new Product_Company__c(Name = 'Test2', Company_Email__c = 'email@test.com');
+        
+        // since it is a duplicate, the database should not have the record saved if the trigger and handler work correctly.
+        Database.SaveResult sr = Database.insert(p2, false);
+        Integer NumFailed = 0;
+        if(!sr.isSuccess()){
+            NumFailed = 1;
+        }
+        
+        System.assertEquals(1, numFailed);
+    }
+    
+    @isTest
+    //Bulk Test Method
+    private static void bulkTest(){
+        // Create lists of data for bulk testing
+        List<Product_Company__c> TestComps = new List <Product_Company__c>();
+        List<Product_Company__c> DuplicateComps = new List<Product_Company__c>();
+        for(Integer i = 0; i < 295; i++){
+            if(i<195){
+                TestComps.add(new Product_Company__c(Name = 'Test ' + i, Company_Email__c = 'email' + i + '@test.com'));
+            } else{
+                DuplicateComps.add(new Product_Company__c(Name = 'Test ' + i, Company_Email__c = 'email' + i + '@test.com'))
+        	}
+        }
+        insert TestComps;
+        
+        //insert bulk data and receive response accordingly
+        List<Database.SaveResult> results = Database.insert(DuplicateComps, false);
+        Integer NumFailed = 0;
+        for(Database.SaveResult sr : results){
+            if(!sr.isSuccess()){
+                NumFailed +=1;
+            }
+        }
+        System.assertEquals(100, numFailed);
+    }
+
+}

@@ -1,0 +1,37 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: OrderTrigger
+// Author: Syed Asghar, Revature P0 Sys Admin
+// Created: 04/11/21
+// Updated: 04/11/21
+// Description: Trigger to adjust inventory as Orders come in.
+//
+///////////////////////////////////////////////////////////////
+
+trigger OrderTrigger on Order (before insert, before update, before delete, after delete, after undelete, after update, after insert) {
+    switch on trigger.operationType{
+        
+        when BEFORE_INSERT{
+            OrderTriggerHandler.CheckQuantity(trigger.new);
+        }
+        when BEFORE_UPDATE{
+            
+        }
+        When BEFORE_DELETE{
+                        
+        }
+        when AFTER_INSERT{
+            
+        }
+        when AFTER_UPDATE{
+            
+        }
+        when AFTER_DELETE{
+            
+        }
+        when AFTER_UNDELETE{
+            
+        }
+    }
+
+}

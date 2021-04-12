@@ -1,0 +1,36 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: ProductCompanyTriggerHandler
+// Author: Syed Asghar, Revature P0 Sys Admin
+// Created: 04/09/21
+// Updated: 04/11/21
+// Description: Basic trigger handler to avoid duplicates while entering in product companies.
+//
+///////////////////////////////////////////////////////////////
+
+public class ProductCompanyTriggerHandler {
+    
+    public static List<Product_Company__c> CompanyDuplicates(List<Product_Company__c> NewCompanies){
+        //Extract the company email
+        Set<String> NewCompanyEmailSet = new Set<String>();
+        for(Product_Company__c NewCompany: NewCompanies){
+            if(NewCompany.Company_Email__c != null){
+                NewCompanyEmailSet.add(NewCompany.Company_Email__c);
+            }
+        }
+        //Find duplicate companies in the database
+        Map<String, Product_Company__c> ExistingPCompanyMap = new Map<String, Product_Company__c>();
+        for(Product_Company__c ExistingCompany: [Select id, name, Company_Email__c FROM Product_Company__c WHERE Company_Email__c in :NewCompanyEmailSet]){
+            ExistingPCompanyMap.put(ExistingCompany.Company_Email__c, ExistingCompany);
+        }
+        
+        //Compare and throw error accordingly
+        for(Product_Company__c NewCompany: NewCompanies) {
+            Product_Company__c DuplicateCompany = ExistingPCompanyMap.get(NewCompany.Company_Email__c);
+            if(DuplicateCompany != null) {
+                NewCompany.addError('ERROR: This company already exists in the record: ' + DuplicateCompany.Name);
+            }
+    }
+        return NewCompanies;
+
+}

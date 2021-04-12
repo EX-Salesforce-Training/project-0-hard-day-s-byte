@@ -14,7 +14,7 @@ public class ScheduleTriggerHandler {
         for(Schedule__c existingUsers: [SELECT id, User__c FROM Schedule__c WHERE User__c IN: users]){
             existingUsersMap.put(existingUsers.User__c, existingUsers);    
         }
-        
+       // Compare to see if any duplicates and then throw an error 
         for (Schedule__c a: newSchedule){
             Schedule__c duplicate = existingUsersMap.get(a.User__c);
             if (duplicate != null){

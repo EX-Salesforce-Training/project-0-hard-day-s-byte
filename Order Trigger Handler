@@ -1,0 +1,25 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: OrderTriggerHandler
+// Author: Syed Asghar, Revature P0 Sys Admin
+// Created: 04/11/21
+// Updated: 04/11/21
+// Description: Handler Class pertaining to Order Trigger.
+//
+///////////////////////////////////////////////////////////////
+
+public class OrderTriggerHandler {
+    public static void CheckQuantity(List<Order> NewOrd){
+        Set<id> ord = new set<id>();
+        for(Order o:NewOrd){
+            ord.add(o.id);
+        }
+        List<Order_Line_Item__c> oli = [SELECT Warehouse_Number__c FROM Order_Line_Item__c WHERE id in :ord];
+        Set<id> pnid = new Set<id>();
+        for(Order_Line_Item__c i: oli){
+            pnid.add(i.id);
+        }
+        List<>
+    }
+
+}

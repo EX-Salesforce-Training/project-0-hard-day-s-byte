@@ -1,0 +1,21 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: ContactTriggerHandler
+// Author: Syed Asghar, Revature P0 Sys Admin
+// Created: 04/09/21
+// Updated: 04/11/21
+// Description: Basic trigger handler to adjust store employee counts accordingly.
+//
+///////////////////////////////////////////////////////////////
+
+public class ContactTriggerHandler {
+    public static void IncreaseEmployees(List<Contact> NewEmployee){
+        // Create list of matching stores to new employee records
+        List <Stores__c> MatchingStores = [SELECT Number_Of_Employees__c FROM Stores__c WHERE Stores__c.Store_Number__c = NewEmployee.Store_Number__c];
+        // for all new employees, increment store employee amount by one
+        for (Contact n:NewEmployee){
+            MatchingStores.Number_Of_Employees__c++;
+        }
+    }
+
+}

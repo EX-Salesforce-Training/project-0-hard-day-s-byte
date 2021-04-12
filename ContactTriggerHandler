@@ -11,11 +11,36 @@
 public class ContactTriggerHandler {
     public static void IncreaseEmployees(List<Contact> NewEmployee){
         // Create list of matching stores to new employee records
-        List <Stores__c> MatchingStores = [SELECT Number_Of_Employees__c FROM Stores__c WHERE Stores__c.Store_Number__c = NewEmployee.Store_Number__c];
+        Set<ID> StoreNumber = new Set<ID>();
+        for(Contact n:NewEmployee){
+            StoreNumber.add(n.Store_Number__c);
+        }
+        List <Stores__c> MatchingStores = [SELECT Number_Of_Employees__c FROM Stores__c WHERE Stores__c.ID in :StoreNumber];
         // for all new employees, increment store employee amount by one
         for (Contact n:NewEmployee){
-            MatchingStores.Number_Of_Employees__c++;
+            for(Stores__c s:MatchingStores){
+                if(s.ID == n.Store_Number__c){
+                    s.Number_Of_Employees__c++;
+                }
+            }
         }
     }
+    
+    public static void DecreaseEmployees(List<Contact> NewEmployee){
+        // Create list of matching stores to new employee records
+         Set<ID> StoreNumber = new Set<ID>();
+        for(Contact n:NewEmployee){
+            StoreNumber.add(n.Store_Number__c);
+        }
+         List <Stores__c> MatchingStores = [SELECT Number_Of_Employees__c FROM Stores__c WHERE Stores__c.ID in :StoreNumber];
+        // for all new employees, increment store employee amount by one
+        for (Contact n:NewEmployee){
+            for(Stores__c s:MatchingStores){
+                if(s.ID == n.Store_Number__c){
+                    s.Number_Of_Employees__c--;
+                }
+    		}
 
-}
+
+		}
+    }

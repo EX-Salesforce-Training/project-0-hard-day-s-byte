@@ -1,0 +1,15 @@
+trigger VehicleTrigger on Vehicle__c (before insert) {
+
+    Set<Id>sales = new Set<Id>();
+    for(Vehicle__c a: trigger.new){
+        sales.add(a.OwnerId);
+    }
+    
+    Map<Id,User> data = new Map<Id,User>([Select name FROM User where id IN:sales]);
+    
+    
+    for(Vehicle__c a: Trigger.new){
+        User b = data.get(a.OwnerId);
+        a.SalesPerson__c = b.Name;
+    }
+}

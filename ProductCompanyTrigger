@@ -1,0 +1,38 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: ProductCompanyTrigger
+// Author: Syed Asghar, Revature P0 Sys Admin
+// Created: 04/09/21
+// Updated: 04/11/21
+// Description: Basic trigger to avoid duplicates while entering in product companies.
+//
+///////////////////////////////////////////////////////////////
+
+trigger ProdcutCompanyTrigger on Product_Company__c (before insert, before update, before delete, after delete, after undelete, after update, after insert) {
+    switch on trigger.operationType{
+        
+        when BEFORE_INSERT{
+            ProductCompanyTriggerHandler.CompanyDuplicates(trigger.new);
+        }
+        when BEFORE_UPDATE{
+            
+        }
+        When BEFORE_DELETE{
+            
+        }
+        when AFTER_INSERT{
+            
+        }
+        when AFTER_UPDATE{
+            
+        }
+        when AFTER_DELETE{
+            
+        }
+        when AFTER_UNDELETE{
+            
+        }
+    }
+
+
+}

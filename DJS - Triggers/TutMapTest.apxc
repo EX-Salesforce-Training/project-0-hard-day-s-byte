@@ -1,0 +1,41 @@
+public class TutMapTest {
+    public static void MapTest() {
+        //List<Id> appies = new List<Id>();
+        List<Tutor_Application__c> appies = new List<Tutor_Application__c>();
+        Tutor_Application__c tA = new Tutor_Application__c();
+        tA.Status__c = 'New';
+        tA.Date_Opened__c = system.today();
+        tA.Learner_Since__c = system.today();
+        tA.Learner_Account__c = '0015Y00002h80B2QAI';
+        insert tA;
+        appies.add(tA);
+        System.debug(tA);
+        //delete tA;
+        
+        //tAA = tA.Learner_Account__r.Name;
+        // Populate map from SOQL query
+        // The mapping is literal! The IDs are from Tutor_Application__c, NOT FROM THE PARENT ACCOUNT
+        // WHY DID I SCREW THAT UP??
+        Map<ID, Tutor_Application__c> m = new Map<ID, Tutor_Application__c>([SELECT Id, Learner_Account__r.Name FROM Tutor_Application__c WHERE Id IN :appies]);
+        // After populating the map, iterate through the map entries - 
+        
+        System.debug('m = ' + m);
+        System.debug('appies = ' + appies);
+        System.debug('appies[0] = ' + appies[0]);
+        Id learnerAccountID = appies[0].Learner_Account__c;
+        ID tutAppID = appies[0].Id;
+        System.debug('learnerAccountID = ' + learnerAccountID);
+        //System.debug('keyset = ' + m.keyset());
+        //System.debug(learnerAccountID.getSobjectType());
+        String l = m.get(tutAppID).Learner_Account__r.Name;
+        System.debug(l);
+        // System.debug('m.get = ' + m.get(learnerAccountID).Learner_Account__r);
+        /*System.debug(m.values());
+        for (ID idKey : m.keyset()) {
+            String t = m.get(idKey).Learner_Account__r.Name;
+            System.debug(t);
+        }*/
+        //delete tA;
+
+    }
+}

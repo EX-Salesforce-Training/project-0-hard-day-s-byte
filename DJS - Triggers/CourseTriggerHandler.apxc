@@ -5,26 +5,23 @@ public class CourseTriggerHandler {
 		String recordTypeID = '0125Y000001b9aDQAQ'; //Lesson RecordTypeID
 		String queueID = '00G5Y0000058diXUAQ';
 		List<Task> insertTask = new List<Task>();
+		// Map<Id, Course__c> m = new Map<Id, Course__c>([SELECT Id, Owner.Name FROM Course__c WHERE Id IN :courses]);
 
 		for (Course__c c: courses) {
 			// We only need records specifically of the Lesson type
 			if (c.RecordTypeId == recordTypeID) {
-				// Get owner of Lesson record
-				String owner = c.OwnerId;
-
+				// Create task with name of lesson and lesson creator
 				Task newTask = new Task();
 				newTask.Subject = 'Review New Lesson - ' + c.Name;
-
-				// Get user name (Lesson record creator) using the OwnerId
-				User u = [SELECT Name FROM User WHERE ID = :owner];
-				newTask.Description = 'Lesson name: ' + c.Name + '\nLesson creator: ' + u.Name;
+				newTask.Description = 'Lesson name: ' + c.Name + '\nLesson creator: ' + c.Owner.Name; // !!!!
 
 				// Assign task to QA Tester Queue
 				newTask.OwnerId = queueID;
 				insertTask.add(newTask);
 			}
 		}
-
-		insert insertTask;
+		
+        // Create new task
+		insert insertTask;	
 	}
 }

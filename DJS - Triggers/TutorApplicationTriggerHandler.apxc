@@ -3,14 +3,17 @@ public class TutorApplicationTriggerHandler {
 	public static void FlagAppReview(List<Tutor_Application__c> appies) {
 		String queueID = '00G5Y0000058e3kUAA';     // Recruiter queue
 		List<Task> insertList = new List<Task>();
+		Map<Id, Tutor_Application__c> m = new Map<Id, Tutor_Application__c>([SELECT Id, Learner_Account__r.Name FROM Tutor_Application__c WHERE Id IN :appies]);
+
 
 		for (Tutor_Application__c a: appies) {
 			Task newTask = new Task();
 			newTask.Subject = 'Application Review - ' + a.Name;
 
 			// Get ID of the Learner's account and grab name from record
-			String learnerAccountID = a.Learner_Account__c;
-			Account l = [SELECT Name FROM Account WHERE Id = :learnerAccountID];
+			// (Can I do this from outside the loop and just map the account ids to names?)
+			String tutAppId = a.Id;
+			Account l = m.get(tutAppId).Learner_Account__r;
 
 			// Give Recruiters access to information at a glance in task
 			newTask.Description = 'Learner Account: ' + l.Name + '\nApplication Date: ' +

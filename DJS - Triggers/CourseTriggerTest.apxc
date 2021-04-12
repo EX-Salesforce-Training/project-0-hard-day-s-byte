@@ -1,44 +1,91 @@
 @isTest
 public class CourseTriggerTest {
-
-	@isTest
-	static void SingleTest() {
-
-		String recordTypeID = '0125Y000001b9aDQAQ'; // Lesson record type
-
-		// Create single Lesson record with required fields
-		Course__c l = new Course__c();
-		l.Name = 'Name';
-		l.RecordTypeId = recordTypeID;
-		l.Status__c = 'New';
-
-		// Try to insert record and save result
-		Database.SaveResult sr = Database.insert(l, false);
-		Integer numFailed = 0;
-
-		// Check if operation has failed and update variable
-		if(!sr.isSuccess()) {
-			numFailed = 1;
-		}
-
-		// Assert error if operation has failed
-		System.assertEquals(0, numFailed);
-	}
-
-	@isTest
-	static void BulkTest() {
-		// Generate mass records
-		List<Database.SaveResult> results = Database.insert(LessonGenUtilityTest.GenerateLessons(100, 'Name'), false);
-		Integer numFailed = 0;
-
-		// Try to insert records and save result
-		for (Database.SaveResult sr: results) {
-			if(!sr.isSuccess()) {
-				numFailed += 1;
-			}
-		}
-
-		// Assert error if operation has failed
-		System.assertEquals(0, numFailed);
-	}
+    
+    @isTest
+    static void SinglePositiveTest() {
+        
+        // Create a single Lesson record with the required fields
+        // Attempt to insert it into the database and save the result
+        List<Database.SaveResult> results = Database.insert(LessonGenUtilityTest.GenerateLessons(1, 'Name'), false);
+        Integer numFailed = 0;
+        
+        for (Database.SaveResult sr: results) {
+            if(!sr.isSuccess()){
+                numFailed += 1;
+            }
+        }
+        
+        System.assertEquals(0, numFailed);
+    }
+    
+    @isTest
+    static void NegativeSingleTest() {
+        // Create a single Lesson record missing required fields
+        String recordID = '0125Y000001b9aDQAQ';
+        Course__c l = new Course__c();
+        l.RecordTypeId = recordID;
+        
+        // Try to insert record and save result
+        Database.SaveResult results = Database.insert(l, false);
+        Integer numSuccess = 0;
+        
+        // Check if the operation has succeeded and update variable
+        if(results.isSuccess()) {
+            numSuccess += 1;
+        }
+        
+        // Assert error if operation has succeeded
+        System.assertEquals(0, numSuccess);
+    }
+    
+    @isTest
+    static void BulkTest() {
+        
+        // Create mass Lesson records with the required fields
+        // Attempt to insert it into the database and save the result
+        List<Database.SaveResult> results = Database.insert(LessonGenUtilityTest.GenerateLessons(200, 'Name'), false);
+        Integer numFailed = 0;
+        
+        // Check if the operation has failed and update variable
+        for (Database.SaveResult sr: results) {
+            if(!sr.isSuccess()){
+                numFailed += 1;
+            }
+        }
+        
+        // Assert error if operation has failed
+        System.assertEquals(0, numFailed);
+    }
+    
+    @isTest
+    public Static Void runAsExample() {
+        //We set up the user
+        String uName = 'user' + Datetime.now().getTime() + '@POTS.com';
+        Profile p = [SELECT id
+                     FROM Profile
+                     WHERE name='Chatter Free User'];
+        
+        User u = new User(alias = 'testUser', email='testuser@harveyville.com',
+                          emailencodingkey='UTF-8', lastname = 'Test', languagelocalekey='en_us',
+                          timezonesidkey='america/new_york', localeSidKey='en_us',
+                          profileId=p.id, username=uName);
+        
+        System.RunAs(u) {
+            try {
+                System.debug(UserInfo.getUserName());
+                System.debug(UserInfo.getProfileId());
+                System.debug('We are running as if the above user.');
+                
+                String recordID = '0125Y000001b9aDQAQ';
+                Course__c l = new Course__c();
+                l.Name = 'Bobitha';
+                l.RecordTypeId = recordID;
+                l.Status__c = 'New';
+                insert l;
+            } Catch(exception e) {
+                System.assert (true);
+                System.debug('Ruh roh!');
+            }
+        }
+    }
 }

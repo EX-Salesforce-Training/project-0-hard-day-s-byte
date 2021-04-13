@@ -11,11 +11,64 @@
 @isTest
 public class ContactTriggerTest {
     
+    @testSetup static void setup() {
+        // Create common test accounts
+        List<Stores__c> testStores = new List<Stores__c>();
+        for(Integer i = 0; i < 101; i++) {
+            testStores.add(new Stores__c(Number_Of_Employees__c = i, Number_Of_Warehouses__c = '1', Store_Address__c = '34'+ i +' Test Lane', Store_City__c = 'TestTown', Store_Number__c = 1152+i, Store_State__c = 'NT', Store_Zip_Code__c = 76531));
+        }
+        insert testStores;
+        
+        /*List<Contact> testContacts = new List<Contact>();
+        for(Integer i=0; i < 101; i++){
+            testContacts.add(new Contact(LastName = 'ConTest' + i));
+        }
+        insert testContacts;*/
+		        
+    }
+    
     @isTest
-    private static void ContactTriggerHandlerPositiveTest(){
-        Stores__c s = new Stores__c(); 
-        Contact c = new Contact();
-        c.Store_Number__c = s.Store_Number__c;
-    } 
+    private static void SingleTestIncrease(){
+        Stores__c s = [SELECT Id FROM Stores__c WHERE Number_Of_Employees__c = 7];
+        
+        Contact c = new Contact(LastName = 'Tester', Store_Number__c = s.Id);
+        
+        system.debug(s.ID);
+        system.debug(c.Store_Number__c);
+        
+        
+      
+        insert c;
+        
+        test.startTest();
+        delete c;
+        test.stopTest();
+        
+              
+    }
+    
+    /*@isTest
+    private static void SingleTestDecrease(){
+        Stores__c s = [SELECT Id FROM Stores__c WHERE Number_Of_Employees__c = 7];
+         
+        testContacts.add(new Contact(LastName = 'DelTest', Store_Number__c = s.Id);
+        //Contact c = [SELECT Id FROM Contact WHERE LastName = 'ConTest7'];
+        //c.add(Store_Number__c = s.Id);
+        
+        system.debug(s.ID);
+        //system.debug(c.Store_Number__c);
+        //system.debug(s.Number_Of_Employees__c);
+        //insert c;
+        
+        //Contact cDel = [SELECT Name FROM Contact WHERE LastName = 'Tester']; 
+        //delete cDel;
+        
+      
+        //system.debug(s.Number_Of_Employees__c);
+        
+        //delete c;
+        //system.debug(Stores__c.Number_Of_Employees__c);
+        
+    }*/ 
 
 }

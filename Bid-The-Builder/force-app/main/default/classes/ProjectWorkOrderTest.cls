@@ -30,20 +30,5 @@ private class ProjectWorkOrderTest {
         insert orderList;
     }
     
-    @isTest
-    static void handleInvoiceTypesByOrderShouldUpdateSingleOrder(){
-        Project_Work_Order__c newOrder = [SELECT Invoice__c FROM Project_Work_Order__c WHERE Project__r.name = 'TestHouse' LIMIT 1];
-        system.assert(newOrder.Invoice__c != null);
-    }
-    
-    @isTest
-    static void newInvoiceShouldBeRightRecordType(){
-        Invoice__c newInvoice = [SELECT recordTypeId FROM Invoice__c WHERE Project__r.name = 'TestHouse' LIMIT 1];
-        system.assert(newInvoice.recordTypeId == '0125Y000001mOuEQAU');
-    }
-    
-    @isTest
-    static void oldInvoiceShouldBeAddedIfPresent(){
-        Project_Work_Order__c newOrder = [SELECT Invoice__c FROM Project_Work_Order__c WHERE Project__r.name = 'TestHouse2' LIMIT 1];
-    }
+   
 }

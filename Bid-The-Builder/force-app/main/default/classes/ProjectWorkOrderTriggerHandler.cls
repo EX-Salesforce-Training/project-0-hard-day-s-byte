@@ -1,88 +1,109 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: ProjectWorkOrderTriggerHandler
+// Author: Josh Miccolo
+// Created: 04/6/2021
+// Updated: 04/12/2021
+// Description: Handler to for Project Work Order Trigger. Finds
+// undelivered invoices for Projects and adds them to the Work Order or makes
+// new invoices for the Projects 
+//
+///////////////////////////////////////////////////////////////
 public class ProjectWorkOrderTriggerHandler {
-	
-    // Create static lists to reference throughout for Insert Queries.
-    private static List<Invoice__c> invoicesToInsert = new List<Invoice__c>();
-    private static List<Project_Work_Order__c> ordersToAssignInvoice = new List<Project_Work_Order__c>();
 
     //check for Invoice in list of triggered Project Work Orders. 
     public static void handleInvoiceTypesByOrder(List<Project_Work_Order__c> orders){
+        
+        //find orders with null Invoices
+        //find 'By Work Order" Invoice Type orders
+        //find undelivered invoices in projects through orders
+        //assign orders to undelivered invoices
+        //create new invoices for projects without undelivered invoices
+        //insert list of invoices
+        //update invoices in orders       
+        
+        List<Project_Work_Order__c> nullInvoiceWorkOrders = checkForNull(orders);
+        List<Project_Work_Order__c> WorkOrderTypeOrders = checkInvoiceType(nullInvoiceWorkOrders);
+        Map<Id, List<Project_Work_Order__c>> ProjectsMappedToOrders = MapProjectToOrders(WorkOrderTypeOrders);
+        Map<Id, List<Project_Work_Order__C>> ProjectsToCreateInvoice = MapWorkOrdersToUndeliveredInvoice(ProjectsMappedToOrders);
+        List<Invoice__c> InvoicesToInsert = createNewInvoices(ProjectsToCreateInvoice);
+        insert InvoicesToInsert;
+        updateNewInvoices(ProjectsToCreateInvoice, InvoicesToInsert);
+    }
+    
+    @TestVisible
+    private static List<Project_Work_Order__c> checkForNull(List<Project_Work_Order__c> orders){
+        
+        List<Project_Work_Order__c> nullInvoices = new List<Project_Work_Order__C>();
+        
         for(Project_Work_Order__c order:orders){
             if(order.Invoice__c == null){
-                assignInvoiceByInvoiceType(order);
+                nullInvoices.add(order);
             }
         }
-        //clear static lists
-        clearLists();
+        
+        return nullInvoices;
     }
     
-    //Switch to add later functionality to other Invoice Types if necessary
     @TestVisible
-    private static void assignInvoiceByInvoiceType(Project_Work_Order__c order){
-        switch on order.Invoice_Type__c {
-            when 'By Work Order'{
-                    attachCorrectInvoice(order);
-                    insertNewInvoices();
-                    assignInsertedInvoices();
+    private static List<Project_Work_Order__c> checkInvoiceType(List<Project_Work_Order__c> orders){
+       	List<Project_Work_Order__c> orderByInvoiceTypes = new List<Project_Work_Order__c>();
+        for(Project_Work_Order__c order:orders){
+            if(order.Invoice_Type__c == 'By Work Order'){
+                orderByInvoiceTypes.add(order);
             }
         }
-	}
-    
-    //Check for any undelivered Invoices in Project and assign to Project Work Order or create a new Invoice.
-    @TestVisible
-    private static void attachCorrectInvoice(Project_Work_Order__c order) {
-        Invoice__c undeliveredProjectInvoice = getUndeliveredProjectInvoice(order);
-        if(undeliveredProjectInvoice != null){
-            order.Invoice__c = undeliveredProjectInvoice.id;
-        }else{
-            //add newly created Invoices to static list for insertion.
-            invoicesToInsert.add(createNewInvoice(order));
-            //add order to list for reference after invoices are inserted.
-            ordersToAssignInvoice.add(order);
-        }
+        return orderByInvoiceTypes;
     }
     
-    //Return a single invoice if undelivered, else return null on QueryException and addError on DMLException
     @TestVisible
-    private static Invoice__c getUndeliveredProjectInvoice(Project_Work_Order__c order){
-        try{
-       		Invoice__c undeliveredInvoice = [SELECT delivered__c 
-                    	            FROM Invoice__c 
-                        	        WHERE Project__c = :order.Project__c 
-                            	    AND recordTypeId = '0125Y000001mOuEQAU' AND delivered__c = false LIMIT 1];
-            return undeliveredInvoice;
-        }catch(QueryException e){
-            Invoice__c nullInvoice = null;
-            return nullInvoice;
-        }catch(DMLException e){
-            order.addError('Object couldn\'t be added at this time');
-            Invoice__c errorInvoice = new Invoice__c();
-            return errorInvoice;
-        } 
+    private static Map<Id, List<Project_Work_Order__c>> MapProjectToOrders(List<Project_Work_Order__c> orders){
+        Map<Id, List<Project_Work_Order__c>> mappedOrders = new Map<Id, List<Project_Work_Order__c>>();
+        for(Project_Work_Order__c order:orders){
+            if(mappedOrders.containsKey(order.Project__c)){
+                List<Project_Work_Order__c> ProjectMappedOrders = mappedOrders.get(order.Project__c);
+                ProjectMappedOrders.add(order);
+            }else{
+                mappedOrders.put(order.Project__c, new List<Project_Work_Order__c>{order});
+            }
+        }	
+        return mappedOrders;
+    }
+    
+    @TestVisible
+    private static Map<Id, List<Project_Work_Order__c>> MapWorkOrdersToUndeliveredInvoice(Map<Id, list<Project_Work_Order__c>> ordersByProject){
+        List<Invoice__C> undeliveredInvoices = [SELECT id, name, Project__c FROM Invoice__c Where Project__c IN :ordersByProject.keySet() AND Delivered__c = false AND RecordTypeId='0125Y000001mOuEQAU'];
+        for(Invoice__c invoice:undeliveredInvoices){
+            if(ordersByProject.containsKey(invoice.Project__c)){
+                List<Project_Work_Order__c> ordersToSet = ordersByProject.get(invoice.Project__c);
+                for(Project_Work_Order__c order:ordersToSet){
+                    order.Invoice__c = invoice.id;
+                }
+                ordersByProject.remove(invoice.Project__c);
+            }
+        }
+        return ordersByProject;
     }
     
     //return invoice for insertion
     @TestVisible
-   	private static Invoice__c createNewInvoice(Project_Work_Order__c order){
-        Project__c project = [SELECT Account__c FROM Project__c WHERE id=:order.Project__c];  
-        Invoice__c newInvoice = new Invoice__c(recordTypeId='0125Y000001mOuEQAU', Project__c = order.Project__c, Customer_Account__c = project.Account__c, Total__c = 0.0);
-        return newInvoice;
-    }
-
-    @TestVisible
-    private static void insertNewInvoices(){
-        insert invoicesToInsert;
-    }
-
-    @TestVisible
-    private static void assignInsertedInvoices(){
-         for(Integer i = 0; i < invoicesToInsert.size(); i++){
-                    ordersToAssignInvoice[i].Invoice__c = invoicesToInsert[i].Id;
+   	private static List<Invoice__c> createNewInvoices(Map<Id, List<Project_Work_Order__c>> projectOrderMap){
+        List<Invoice__c> newInvoices = new List<Invoice__c>();
+        for(Id project:ProjectOrderMap.keySet()){
+            newInvoices.add(new Invoice__c(recordTypeId='0125Y000001mOuEQAU', Project__c = project, Total__c = 0.00));
         }
+        return newInvoices;
     }
-
+    
     @TestVisible
-    private static void clearLists(){
-        invoicesToInsert.clear();
-        ordersToAssignInvoice.clear();
+    private Static void updateNewInvoices(Map<Id, List<Project_Work_Order__c>> ordersByProject, List<Invoice__c> insertedInvoices){
+        for(Invoice__c invoice:insertedInvoices){
+            if(ordersByProject.containsKey(invoice.Project__c)){
+                List<Project_Work_Order__c> ordersToSet = ordersByProject.get(invoice.Project__c);
+                for(Project_Work_Order__c order:ordersToSet){
+                    order.Invoice__c = invoice.id;
+                }
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ trigger WarehouseOrderTrigger on Warehouse_Order__c (before insert, before updat
          	   
         }
         when AFTER_UPDATE{
-            WarehouseOrderTriggerHandler.adjustInventoryWithReception(trigger.new);
+            WarehouseOrderTriggerHandler.adjustInventoryOnReceipt(trigger.new);
         }
         when BEFORE_DELETE{
             WarehouseOrderTriggerHandler.confirmNotShipped(trigger.new);

@@ -12,19 +12,13 @@
 public class ProjectWorkOrderTriggerHandler {
 
     //check for Invoice in list of triggered Project Work Orders. 
-    public static void handleInvoiceTypesByOrder(List<Project_Work_Order__c> orders){
-        
-        //find orders with null Invoices
-        //find 'By Work Order" Invoice Type orders
-        //find undelivered invoices in projects through orders
-        //assign orders to undelivered invoices
-        //create new invoices for projects without undelivered invoices
-        //insert list of invoices
-        //update invoices in orders       
+    public static void handleWorkOrderInvoiceTypes(List<Project_Work_Order__c> orders){   
         
         List<Project_Work_Order__c> nullInvoiceWorkOrders = checkForNull(orders);
         List<Project_Work_Order__c> WorkOrderTypeOrders = checkInvoiceType(nullInvoiceWorkOrders);
         Map<Id, List<Project_Work_Order__c>> ProjectsMappedToOrders = MapProjectToOrders(WorkOrderTypeOrders);
+        
+        //Will return list of orders without Invoices Assigned to them by Project Id
         Map<Id, List<Project_Work_Order__C>> ProjectsToCreateInvoice = MapWorkOrdersToUndeliveredInvoice(ProjectsMappedToOrders);
         List<Invoice__c> InvoicesToInsert = createNewInvoices(ProjectsToCreateInvoice);
         insert InvoicesToInsert;
@@ -85,16 +79,18 @@ public class ProjectWorkOrderTriggerHandler {
         return ordersByProject;
     }
     
-    //return invoice for insertion
+    //return invoices for insertion
     @TestVisible
    	private static List<Invoice__c> createNewInvoices(Map<Id, List<Project_Work_Order__c>> projectOrderMap){
         List<Invoice__c> newInvoices = new List<Invoice__c>();
+        Id byWorkOrderRecordTypeId =  Schema.SObjectType.Invoice__c.getRecordTypeInfosByName().get('Work Order Invoice').getRecordTypeId();
         for(Id project:ProjectOrderMap.keySet()){
-            newInvoices.add(new Invoice__c(recordTypeId='0125Y000001mOuEQAU', Project__c = project, Total__c = 0.00));
+            newInvoices.add(new Invoice__c(recordTypeId=byWorkOrderRecordTypeId, Project__c = project, Total__c = 0.00));
         }
         return newInvoices;
     }
     
+    //update Project Work Order Lists with new Invoices
     @TestVisible
     private Static void updateNewInvoices(Map<Id, List<Project_Work_Order__c>> ordersByProject, List<Invoice__c> insertedInvoices){
         for(Invoice__c invoice:insertedInvoices){

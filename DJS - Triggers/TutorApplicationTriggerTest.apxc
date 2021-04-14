@@ -1,4 +1,4 @@
-@isTest(SeeAllData=true)
+@isTest(SeeAllData=true) // Tests fail otherwise  ¯\_(ツ)_/¯
 public class TutorApplicationTriggerTest {
 
 	@isTest

@@ -1,4 +1,4 @@
-@IsTest(SeeAllData=true)
+@IsTest(SeeAllData=true) // Tests fail otherwise  ¯\_(ツ)_/¯
 public class CourseTriggerTest {
 
 	@IsTest

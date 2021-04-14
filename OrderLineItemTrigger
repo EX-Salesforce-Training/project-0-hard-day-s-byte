@@ -1,0 +1,38 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: OrderLineItemTrigger
+// Author: Syed Asghar, Revature P0 Sys Admin
+// Created: 04/13/21
+// Updated: 04/14/21
+// Description: Basic trigger to remind warehouse employees about low stock.
+//
+///////////////////////////////////////////////////////////////
+
+
+trigger OrderLineItemTrigger on Order_Line_Item__c (before insert, before update, before delete, after delete, after undelete, after update, after insert) {
+    switch on trigger.operationType{
+        
+        when BEFORE_INSERT{
+            OrderLineItemTriggerHandler.AlertWarehouse(trigger.new);
+        }
+        when BEFORE_UPDATE{
+            
+        }
+        When BEFORE_DELETE{
+            
+        }
+        when AFTER_INSERT{
+            
+        }
+        when AFTER_UPDATE{
+            
+        }
+        when AFTER_DELETE{
+            
+        }
+        when AFTER_UNDELETE{
+            
+        }
+    }
+
+}

@@ -1,91 +1,120 @@
-@isTest
+@IsTest(SeeAllData=true)
 public class CourseTriggerTest {
-    
-    @isTest
-    static void SinglePositiveTest() {
-        
-        // Create a single Lesson record with the required fields
-        // Attempt to insert it into the database and save the result
-        List<Database.SaveResult> results = Database.insert(LessonGenUtilityTest.GenerateLessons(1, 'Name'), false);
-        Integer numFailed = 0;
-        
-        for (Database.SaveResult sr: results) {
-            if(!sr.isSuccess()){
-                numFailed += 1;
-            }
-        }
-        
-        System.assertEquals(0, numFailed);
-    }
-    
-    @isTest
-    static void NegativeSingleTest() {
-        // Create a single Lesson record missing required fields
-        String recordID = '0125Y000001b9aDQAQ';
-        Course__c l = new Course__c();
-        l.RecordTypeId = recordID;
-        
-        // Try to insert record and save result
-        Database.SaveResult results = Database.insert(l, false);
-        Integer numSuccess = 0;
-        
-        // Check if the operation has succeeded and update variable
-        if(results.isSuccess()) {
-            numSuccess += 1;
-        }
-        
-        // Assert error if operation has succeeded
-        System.assertEquals(0, numSuccess);
-    }
-    
-    @isTest
-    static void BulkTest() {
-        
-        // Create mass Lesson records with the required fields
-        // Attempt to insert it into the database and save the result
-        List<Database.SaveResult> results = Database.insert(LessonGenUtilityTest.GenerateLessons(200, 'Name'), false);
-        Integer numFailed = 0;
-        
-        // Check if the operation has failed and update variable
-        for (Database.SaveResult sr: results) {
-            if(!sr.isSuccess()){
-                numFailed += 1;
-            }
-        }
-        
-        // Assert error if operation has failed
-        System.assertEquals(0, numFailed);
-    }
-    
-    @isTest
-    public Static Void runAsExample() {
-        //We set up the user
-        String uName = 'user' + Datetime.now().getTime() + '@POTS.com';
-        Profile p = [SELECT id
-                     FROM Profile
-                     WHERE name='Chatter Free User'];
-        
-        User u = new User(alias = 'testUser', email='testuser@harveyville.com',
-                          emailencodingkey='UTF-8', lastname = 'Test', languagelocalekey='en_us',
-                          timezonesidkey='america/new_york', localeSidKey='en_us',
-                          profileId=p.id, username=uName);
-        
-        System.RunAs(u) {
-            try {
-                System.debug(UserInfo.getUserName());
-                System.debug(UserInfo.getProfileId());
-                System.debug('We are running as if the above user.');
-                
-                String recordID = '0125Y000001b9aDQAQ';
-                Course__c l = new Course__c();
-                l.Name = 'Bobitha';
-                l.RecordTypeId = recordID;
-                l.Status__c = 'New';
-                insert l;
-            } Catch(exception e) {
-                System.assert (true);
-                System.debug('Ruh roh!');
-            }
-        }
-    }
+
+	@IsTest
+	static void SinglePositiveTest() {
+
+		// Create a single Lesson record with the required fields
+		// Attempt to insert it into the database and save the result
+		List<Database.SaveResult> results = Database.insert(LessonGenUtilityTest.GenerateLessons(1, 'SingleTest'), false);
+		Integer numFailed = 0;
+
+		// Test Lesson record insert
+		for (Database.SaveResult sr: results) {
+			if(!sr.isSuccess()) {
+				numFailed += 1;
+			}
+		}
+
+		System.assertEquals(0, numFailed);
+
+		List<Task> taskResult = [SELECT Subject FROM Task WHERE Subject LIKE '%SingleTest%'];
+		System.assertNotEquals(0, taskResult.size());
+
+		/*// Test sending the email
+				Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+				User[] u = new User[] {[SELECT Name, Email FROM User WHERE UserRole.Name = 'Head of Content Development']};
+				String[] toAddress = new String[] {u[0].Email};
+				email.setToAddresses(toAddress);
+				email.setSubject('New Lesson Created');
+				email.setPlainTextBody('Dear ' + u[0].Name + '\nA new Lesson has been created. Please check the QA Tester Tasks for more information.' +
+														'\n\nThank you,\nYour Friendly Neighborhood Salesforce Admin');
+
+				Messaging.SendEmailResult[] results = Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email});
+				Boolean sendResult = true;
+
+				if results.isSuccess() {
+
+				} else {
+						sendResult = false;
+
+				}
+
+				System.assert (sendResult);*/
+	}
+
+	@isTest
+	static void NegativeSingleTest() {
+		// Create a single Order record missing required fields
+		String recordID = Schema.SObjectType.Course__c.getRecordTypeInfosByName().get('Lesson').getRecordTypeId();
+		Course__c l = new Course__c();
+		l.RecordTypeId = recordID;
+
+		// Test Lesson record insert
+		Database.SaveResult results = Database.insert(l, false);
+		Integer numSuccess = 0;
+		if(results.isSuccess()) {
+			numSuccess += 1;
+		}
+
+		System.assertEquals(0, numSuccess);
+
+		List<Task> taskResult = [SELECT Subject FROM Task WHERE Subject LIKE '%SingleTest%'];
+		System.assertEquals(0, taskResult.size());
+
+	}
+
+	@isTest
+	static void BulkTest() {
+
+		// Create mass Lesson records with the required fields
+		// Attempt to insert it into the database and save the result
+		List<Database.SaveResult> results = Database.insert(LessonGenUtilityTest.GenerateLessons(200, 'Bulktest'), false);
+		Integer numFailed = 0;
+
+		// Check if the operation has failed and update variable
+		for (Database.SaveResult sr: results) {
+			if(!sr.isSuccess()) {
+				numFailed += 1;
+			}
+		}
+
+		List<Task> taskResult = [SELECT Subject FROM Task WHERE Subject LIKE '%BulkTest%'];
+		System.assertNotEquals(0, taskResult.size());
+
+		// Assert error if operation has failed
+		System.assertEquals(0, numFailed);
+	}
+
+	@isTest
+	public Static Void runAsExample() {
+		// User setup
+		String uName = 'user' + Datetime.now().getTime() + '@ChatterIsSoCool.com';
+		Profile p = [SELECT id
+					FROM Profile
+					WHERE name='Chatter Free User'];
+
+		User u = new User(alias = 'testUser', email='jonnie@jonniez.com',
+						emailencodingkey='UTF-8', lastname = 'Test', languagelocalekey='en_us',
+						timezonesidkey='america/new_york', localeSidKey='en_us',
+						profileId=p.id, username=uName);
+
+		System.RunAs(u) {
+			try {
+				System.debug(UserInfo.getUserName());
+				System.debug(UserInfo.getProfileId());
+				System.debug('Run as above user.');
+
+				String recordID = '0125Y000001b9aDQAQ';
+				Course__c l = new Course__c();
+				l.Name = 'Bobitha';
+				l.RecordTypeId = recordID;
+				l.Status__c = 'New';
+				insert l;
+			} Catch(exception e) {
+				System.assert (true);
+				System.debug('Ruh roh!');
+			}
+		}
+	}
 }

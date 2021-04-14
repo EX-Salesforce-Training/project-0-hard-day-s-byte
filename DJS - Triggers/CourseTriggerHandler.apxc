@@ -1,27 +1,53 @@
 public class CourseTriggerHandler {
 
 	public static void FlagQAReview(List<Course__c> courses) {
-
-		String recordTypeID = '0125Y000001b9aDQAQ'; //Lesson RecordTypeID
-		String queueID = '00G5Y0000058diXUAQ';
 		List<Task> insertTask = new List<Task>();
-		// Map<Id, Course__c> m = new Map<Id, Course__c>([SELECT Id, Owner.Name FROM Course__c WHERE Id IN :courses]);
+
+		// Grab Lesson Record ID
+		String recordTypeID = Schema.SObjectType.Course__c.getRecordTypeInfosByName().get('Lesson').getRecordTypeId();
+
+		// Grab QA Tester Queue ID
+		Group qaTestersQueue = [SELECT Id FROM Group WHERE Name = 'QA Testers Queue' and Type = 'Queue'];
+		String qaTestersQueueID = qaTestersQueue.Id;
+
+		// Grab Ids of new Lesson records and map them to the creators' names
+		Map<Id, Course__c> m = new Map<Id, Course__c>([SELECT Id, Owner.Name FROM Course__c WHERE Id IN: courses]);
 
 		for (Course__c c: courses) {
 			// We only need records specifically of the Lesson type
 			if (c.RecordTypeId == recordTypeID) {
-				// Create task with name of lesson and lesson creator
 				Task newTask = new Task();
+
+				// Get ID of the new Lesson and grab corresponding Account Name from map
+				String courseId =  c.Id;
+				Name a = m.get(courseId).Owner;
+
+				// Create task with name of lesson and lesson creator
 				newTask.Subject = 'Review New Lesson - ' + c.Name;
-				newTask.Description = 'Lesson name: ' + c.Name + '\nLesson creator: ' + c.Owner; // !!!
+				newTask.Description = 'Lesson name: ' + c.Name + '\nLesson creator: ' + a.Name;
 
 				// Assign task to QA Tester Queue
-				newTask.OwnerId = queueID;
+				newTask.OwnerId = qaTestersQueueID;
 				insertTask.add(newTask);
 			}
 		}
-		
-        // Create new task
-		insert insertTask;	
+
+		// Create new task
+		insert insertTask;
 	}
+
+	public static void sendMail() {
+		Messaging.SingleEmailMessage email = new Messaging.SingleEmailMessage();
+		User[] u = new User[] {[SELECT Name, Email FROM User WHERE UserRole.Name = 'Head of Content Development']};
+		String[] toAddress = new String[] {u[0].Email};
+
+		// Send email to Head of Content Development
+		email.setToAddresses(toAddress);
+		email.setSubject('New Lesson Created');
+		email.setPlainTextBody('Dear ' + u[0].Name + '\nA new Lesson has been created. Please check the QA Tester Tasks for more information.' +
+							'\n\nThank you,\nYour Friendly Neighborhood Salesforce Admin');
+
+		Messaging.sendEmail(new Messaging.SingleEmailMessage[] {email});
+	}
+
 }

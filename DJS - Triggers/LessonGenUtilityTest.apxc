@@ -4,7 +4,7 @@ public class LessonGenUtilityTest {
     // Generate Lesson records to test CourseTrigger
     public static List<Course__c> GenerateLessons(Integer numLess, String Name) {
         List<Course__c> gendLess = new List<Course__c>();
-        String recordID = '0125Y000001b9aDQAQ';
+        String recordID = Schema.SObjectType.Course__c.getRecordTypeInfosByName().get('Lesson').getRecordTypeId();
         
         for(Integer i = 0; i < numLess; i++) {
             Course__c l = new Course__c();

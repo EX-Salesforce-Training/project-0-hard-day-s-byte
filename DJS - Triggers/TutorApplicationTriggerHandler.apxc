@@ -1,17 +1,20 @@
 public class TutorApplicationTriggerHandler {
 
 	public static void FlagAppReview(List<Tutor_Application__c> appies) {
-		String queueID = '00G5Y0000058e3kUAA';     // Recruiter queue
 		List<Task> insertList = new List<Task>();
-		Map<Id, Tutor_Application__c> m = new Map<Id, Tutor_Application__c>([SELECT Id, Learner_Account__r.Name FROM Tutor_Application__c WHERE Id IN :appies]);
 
+		// Grab Recruiting Queue ID
+		Group recruitingQueue = [SELECT Id FROM Group WHERE Name = 'Recruiting Queue' and Type = 'Queue'];
+		String recruitingQueueID = recruitingQueue.Id;
+
+		// Grab IDs of new Tutor_Application__c records and map them to Learner_Account__r names
+		Map<Id, Tutor_Application__c> m = new Map<Id, Tutor_Application__c>([SELECT Id, Learner_Account__r.Name FROM Tutor_Application__c WHERE Id IN :appies]);
 
 		for (Tutor_Application__c a: appies) {
 			Task newTask = new Task();
 			newTask.Subject = 'Application Review - ' + a.Name;
 
-			// Get ID of the Learner's account and grab name from record
-			// (Can I do this from outside the loop and just map the account ids to names?)
+			// Get ID of the new Tutor Application and grab corresponding Account Name from map
 			String tutAppId = a.Id;
 			Account l = m.get(tutAppId).Learner_Account__r;
 
@@ -20,7 +23,7 @@ public class TutorApplicationTriggerHandler {
 								a.Date_Opened__c + '\nLanguage(s): ' + a.Language_s__c + '\nLearner Since: ' + a.Learner_Since__c;
 
 			// Assign to Recruiter queue
-			newTask.OwnerId = queueID;
+			newTask.OwnerId = recruitingQueueID;
 			insertList.add(newTask);
 		}
 

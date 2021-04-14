@@ -1,0 +1,34 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: OrderLineItemTriggerHandler
+// Author: Syed Asghar, Revature P0 Sys Admin
+// Created: 04/13/21
+// Updated: 04/14/21
+// Description: Basic trigger handler to remind warehouse employees about low stock.
+//
+///////////////////////////////////////////////////////////////
+
+public class OrderLineItemTriggerHandler {
+    public static void AlertWarehouse(List<Order_Line_Item__c> NewLineItem){
+        List<Id> LineItemProduct = new List<Id>();
+        for(Order_Line_Item__c n:NewLineItem){
+            LineItemProduct.add(n.Product_Number__c);
+        }
+        List<Product2> QuantityLevels = [SELECT Quantity_in_Stock__c FROM Product2 WHERE Product2.Id in :LineItemProduct];
+        List<Task> NewAlert = new List<Task>();
+        
+        for (Order_Line_Item__c n:NewLineItem){
+            for(Product2 q:QuantityLevels){
+                if(q.ID == n.Product_Number__c){
+                    if(q.Quantity_in_Stock__c < 6 && q.Quantity_in_Stock__c >1){
+                        Task newTask = new Task();
+                        newTask.subject = 'Low Inventory: Order More of this Product!';
+                        NewAlert.add(newTask);
+                    }
+                }
+            }
+        }
+        insert NewAlert;
+    }
+
+}

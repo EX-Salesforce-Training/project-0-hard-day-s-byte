@@ -9,7 +9,7 @@
 // new invoices for the Projects 
 //
 ///////////////////////////////////////////////////////////////
-public class ProjectWorkOrderTriggerHandler {
+public with sharing class ProjectWorkOrderTriggerHandler {
 
     //check for Invoice in list of triggered Project Work Orders. 
     public static void handleWorkOrderInvoiceTypes(List<Project_Work_Order__c> orders){   

@@ -4,14 +4,15 @@ public class WarehouseOrderTriggerTest {
     @isTest
     static void newOrderNotShipped(){
         Warehouse_Order__c newOrder = new Warehouse_Order__c(Status__c = 'Shipped');
-       	Test.startTest();
-        Database.SaveResult sr = database.insert(newOrder);
+       	
+        Test.startTest();
+        try{
+        	Database.SaveResult sr = database.insert(newOrder);  
+        }
+        catch (DMLException e){
+            system.assert(e.getMessage().contains('Order cannot be Shipped'));
+        }
         Test.stopTest();
-        
-       	system.assert(!sr.isSuccess());
-        system.assert(sr.getErrors().size() == 1);
-        system.assertEquals(sr.getErrors()[0].getMessage(), 'Order cannot be Shipped');
-        
     }
     
     @isTest

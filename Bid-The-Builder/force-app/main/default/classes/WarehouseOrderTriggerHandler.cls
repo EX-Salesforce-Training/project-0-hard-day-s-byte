@@ -80,14 +80,18 @@ public class WarehouseOrderTriggerHandler {
     @TestVisible
     private static Map<Id, Map<Id, Material_Inventory__c>> getMaterialInventoriesByWarehouses(Map<Id, Map<Id, Decimal>> LineItems, Set<Id> Materials){
        	
+        Set<Id> warehouses = lineItems.keySet();
+        
+        
         //Query for all Material Inventories by warehouses in orders and raw Materials in Line Items
-        List<Material_Inventory__c> inventories = [SELECT Raw_Material__c, Warehouse__c, Quantity__c FROM Material_Inventory__c WHERE Warehouse__c IN :lineItems.KeySet() AND Raw_Material__c IN :Materials];
-    	
+        List<Material_Inventory__c> inventories = [SELECT Name, Raw_Material__c, Warehouse__c, Quantity__c FROM Material_Inventory__c WHERE (Warehouse__c IN :warehouses AND Raw_Material__c IN :Materials)];
+    
         //Map to save Material inventories by their Warehouse and Raw_Material
         Map<Id, Map<Id, Material_Inventory__C>> mappedInventories = new Map<Id, Map<Id, Material_Inventory__c>>();
         
         
         for(Material_Inventory__c inventory:inventories){
+            system.debug(inventory.Name);
             if(mappedInventories.containsKey(inventory.Warehouse__c)){
                 mappedInventories.get(inventory.Warehouse__c).put(Inventory.Raw_Material__c, inventory);
             }else{
@@ -110,9 +114,7 @@ public class WarehouseOrderTriggerHandler {
                 for(Id rawMaterial:warehouseLineItems.keySet()){
                     if(warehouseInventory.containsKey(rawMaterial)){
                         Material_Inventory__c inventoryToUpdate = warehouseInventory.get(rawMaterial);
-                        system.debug(inventoryToUpdate);
                         inventoryToUpdate.Quantity__C += warehouseLineItems.get(rawMaterial);
-                        system.debug(inventoryToUpdate);
                         updatedInventory.add(inventoryToUpdate);
                     }
                     else{

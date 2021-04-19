@@ -13,13 +13,7 @@ trigger WarehouseOrderTrigger on Warehouse_Order__c (before insert, before updat
             WarehouseOrderTriggerHandler.adjustInventoryOnReceipt(trigger.new);
         }
         when BEFORE_DELETE{
-            WarehouseOrderTriggerHandler.confirmNotShipped(trigger.new);
-        }
-        when AFTER_DELETE{
-            
-        }
-        when AFTER_UNDELETE{
-            
+            WarehouseOrderTriggerHandler.confirmNotShipped(trigger.old);
         }
     }
 }

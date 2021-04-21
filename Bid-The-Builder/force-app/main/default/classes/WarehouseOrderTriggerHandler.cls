@@ -1,3 +1,13 @@
+///////////////////////////////////////////////////////////////
+//
+// Name: ProjectWorkOrderTriggerHandler
+// Author: Josh Miccolo
+// Created: 04/6/2021
+// Updated: 04/12/2021
+// Description: Warehouse Order Trigger Handler. Confirms not shipped items
+// and adjusts inventory when recieved. 
+//
+///////////////////////////////////////////////////////////////
 public class WarehouseOrderTriggerHandler {
 
     //Before Insert or Delete make sure order hasn't shipped
